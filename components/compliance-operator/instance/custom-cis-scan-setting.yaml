@@ -1,0 +1,22 @@
+apiVersion: compliance.openshift.io/v1alpha1
+debug: true
+kind: ScanSetting
+metadata:
+  name: custom-cis-ss
+roles:
+  - worker
+  - master
+rawResultStorage:
+  nodeSelector:
+    node-role.kubernetes.io/worker: "" 
+  pvAccessModes:
+  - ReadWriteOnce
+  rotation: 3
+  size: 1Gi
+  tolerations:
+  - operator: Exists
+scanTolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+schedule: '0 1 * * *'
