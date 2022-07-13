@@ -8,3 +8,4 @@ commonAnnotations:
 
 resources:
   - subscription.yaml
+  - namespace.yaml

@@ -4,7 +4,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
   name: create-cluster-init-bundle
-  namespace: rhacs-operator
+  namespace: stackrox 
 spec:
   template:
     spec:
@@ -21,7 +21,7 @@ spec:
             - -c
             - |
               #!/usr/bin/env bash
-              if kubectl get secret/sensor-tls &> /dev/null; then
+              if oc -n stackrox get secret/sensor-tls &> /dev/null; then
                 echo "cluster-init bundle has already been configured, doing nothing"
                 exit 0
               else
@@ -51,9 +51,9 @@ spec:
 
                 echo "Applying bundle"
                 # No jq in container, python to the rescue
-                cat /tmp/bundle.json | python3 -c "import sys, json; print(json.load(sys.stdin)['kubectlBundle'])" | base64 -d | oc apply -f -
+                cat /tmp/bundle.json | python3 -c "import sys, json; print(json.load(sys.stdin)['kubectlBundle'])" | base64 -d | oc -n stackrox apply -f - 
                 # Touch SecuredCluster to force operator to reconcile
-                oc label SecuredCluster local-cluster cluster-init-job-status=created
+                oc -n stackrox label SecuredCluster local-cluster cluster-init-job-status=created
 
                 echo "ACS Cluster init bundle generated and applied"
               fi
