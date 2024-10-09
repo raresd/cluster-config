@@ -1,0 +1,15 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: compliance-operator-install
+policyDefaults:
+  namespace: policies
+  placement:
+    clusterSelectors:
+      vendor: OpenShift
+  remediationAction: enforce
+  pruneObjectBehavior: "DeleteAll"
+policies:
+  - name: compliance-operator-install
+    manifests:
+      - path: compliance-operator/overlays/stable

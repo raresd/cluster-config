@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: acm-policy-compliance-operator
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  labels:
+    gitops.ownedby: cluster-config
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/raresd/cluster-config.git 
+    targetRevision: main
+    path: policygenerator/
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: openshift-gitops
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:    
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground 
+    - PruneLast=true 
+    - RespectIgnoreDifferences=true 
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s 
+        factor: 2 
+        maxDuration: 3m 
